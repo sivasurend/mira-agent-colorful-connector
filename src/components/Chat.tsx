@@ -4,6 +4,8 @@ import { TypingIndicator } from "./TypingIndicator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
+import { sendChatMessage } from "@/services/api";
+import { useToast } from "@/components/ui/use-toast";
 
 export const Chat = () => {
   const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean }>>([
@@ -12,6 +14,7 @@ export const Chat = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -30,14 +33,18 @@ export const Chat = () => {
     setMessages((prev) => [...prev, { text: userMessage, isUser: true }]);
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await sendChatMessage(userMessage, "YOUR_API_KEY");
       setIsTyping(false);
-      setMessages((prev) => [
-        ...prev,
-        { text: "I'm here to help you build amazing agents!", isUser: false },
-      ]);
-    }, 1500);
+      setMessages((prev) => [...prev, { text: response.message || "I'm here to help!", isUser: false }]);
+    } catch (error) {
+      setIsTyping(false);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
