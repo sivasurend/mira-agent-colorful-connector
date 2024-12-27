@@ -21,7 +21,7 @@ const Index = () => {
     return <ApiKeyForm onSubmit={handleApiKeySubmit} />;
   }
 
-  return <Chat />;
+  return <Chat apiKey={apiKey} />;
 };
 
 export default Index;

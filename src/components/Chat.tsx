@@ -7,7 +7,11 @@ import { Send } from "lucide-react";
 import { sendChatMessage } from "@/services/api";
 import { useToast } from "@/components/ui/use-toast";
 
-export const Chat = () => {
+interface ChatProps {
+  apiKey: string;
+}
+
+export const Chat = ({ apiKey }: ChatProps) => {
   const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean }>>([
     { text: "Hi! I'm Mira, your Agent Builder Assistant. How can I help you today?", isUser: false },
   ]);
@@ -34,7 +38,7 @@ export const Chat = () => {
     setIsTyping(true);
 
     try {
-      const response = await sendChatMessage(userMessage, "YOUR_API_KEY");
+      const response = await sendChatMessage(userMessage, apiKey);
       setIsTyping(false);
       setMessages((prev) => [...prev, { text: response.message || "I'm here to help!", isUser: false }]);
     } catch (error) {
